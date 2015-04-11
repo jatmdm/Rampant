@@ -6,25 +6,78 @@ public class Player : MonoBehaviour {
 	public GameObject weapon;
 	public float sBounce;
 	public float weaponDist = 1;
+	private float sheathCoolDown;
+	private bool Unsheathed;
+	public Vector2 vel;
+	private float speed;
+	private float fakeMax;
+	public float maxSpeed;
+	
+	private float dashTime;
+	public float dashSpeed;
 
 	// Use this for initialization
 	void Start () {
-	
+		Physics2D.IgnoreLayerCollision (8, 8);
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void FixedUpdate () 
+	{
+		sheathCoolDown -= Time.fixedDeltaTime;
+		dashTime -= Time.fixedDeltaTime;
 
 		sBounce = Mathf.Lerp (sBounce, 0, Time.fixedDeltaTime * 5);
 
-		if(Input.GetMouseButton(0))
+		if(dashTime < 0) vel = Vector2.Lerp (vel, Vector2.zero, Time.fixedDeltaTime * 3);
+
+		if(dashTime < 0)
 		{
-			sBounce = 360;
+			if(Input.GetKey(KeyCode.W))
+			{
+				vel.y = Mathf.Lerp(vel.y, 1, Time.fixedDeltaTime*5);
+			}
+			if(Input.GetKey(KeyCode.S))
+			{
+				vel.y = Mathf.Lerp(vel.y, -1, Time.fixedDeltaTime*5);
+			}
+			if(Input.GetKey(KeyCode.D))
+			{
+				vel.x = Mathf.Lerp(vel.x, 1, Time.fixedDeltaTime*5);
+			}
+			if(Input.GetKey(KeyCode.A))
+			{
+				vel.x = Mathf.Lerp(vel.x, -1, Time.fixedDeltaTime*5);
+			}
+		}
+
+		if(dashTime < 0) GetComponent<Rigidbody2D> ().MovePosition (GetComponent<Rigidbody2D> ().position + (vel * (fakeMax) * Time.fixedDeltaTime));
+		else GetComponent<Rigidbody2D> ().MovePosition (GetComponent<Rigidbody2D> ().position + (vel * Time.fixedDeltaTime));
+
+		if(Unsheathed)
+		{
+			if(!weapon.activeSelf) 
+			{
+				sBounce = 360;
+			}
 			weapon.SetActive(true);
+			fakeMax = Mathf.Lerp(fakeMax, maxSpeed*.65f, Time.fixedDeltaTime*5);
 		}
 		else
 		{
+			fakeMax = Mathf.Lerp(fakeMax, maxSpeed, Time.fixedDeltaTime*5);
 			weapon.SetActive(false);
+		}
+
+		if(Input.GetMouseButtonDown(0) && sheathCoolDown < 0)
+		{
+			Unsheathed = !Unsheathed;
+			sheathCoolDown = 1;
+		}
+		if(Input.GetKeyDown(KeyCode.LeftShift) && dashTime < 0)
+		{
+			dashTime = .18f;
+			vel *= dashSpeed;
 		}
 	
 		float cameraDif = Camera.main.transform.position.y - transform.position.y;
@@ -36,9 +89,11 @@ public class Player : MonoBehaviour {
 		float diffX = mWorldPos.x - mainPos.x;
 		float diffY = mWorldPos.y - mainPos.y;
 
+		weaponDist = Mathf.Lerp(weaponDist, Mathf.Clamp (Vector2.Distance (mWorldPos, transform.position), .5f, 1f), Time.fixedDeltaTime*5);
+
 		Vector2 dist = new Vector2(Mathf.Cos(Mathf.Atan2 (diffY, diffX)-(sBounce)*Mathf.Deg2Rad)*weaponDist, Mathf.Sin(Mathf.Atan2 (diffY, diffX)-(sBounce)*Mathf.Deg2Rad)*weaponDist);
 		weapon.GetComponent<Rigidbody2D> ().MovePosition ((Vector2)this.transform.position+dist);
 
-		weapon.transform.rotation = Quaternion.Lerp(weapon.transform.rotation, Quaternion.Euler(0, 0, Mathf.Rad2Deg*Mathf.Atan2 (diffY, diffX)+90+sBounce), Time.fixedDeltaTime*10);
+		weapon.transform.rotation = Quaternion.Euler (0, 0, Mathf.Rad2Deg * Mathf.Atan2 (diffY, diffX)+90-sBounce);
 	}
 }
