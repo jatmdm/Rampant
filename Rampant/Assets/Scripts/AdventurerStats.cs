@@ -19,12 +19,14 @@ public class AdventurerStats : MonoBehaviour {
 	
 	public float physicalDefense; //Damage Reduction (Physical)
 	public float magicDefense; //Damage Reduction (Magic)
-	
+
+	public bool dead;
 
 
 	// Use this for initialization
 	void Start () {
 		initStats();
+		dead = false;
 	}
 
 	public void initStats(){
@@ -38,7 +40,7 @@ public class AdventurerStats : MonoBehaviour {
 
 		gender = new Vector2(Random.Range(0f, 6f), Random.Range(0f, 6f));
 
-		baseDamage = power*10.9f;
+		baseDamage = (power*10f)*1.257f;
 		physicalDefense = (power/2f) + (10f * vit);
 		magicDefense = (wit/2f) + (8f * vit);
 	}
@@ -49,20 +51,21 @@ public class AdventurerStats : MonoBehaviour {
 
 
 
-	public void takeDamage(float rawDamage, bool phys){ //Phys is whether or not damage is physical or not
-		float damageTaken;
-
-		if(phys){
-			damageTaken = rawDamage - physicalDefense;
+	public void takeDamage(float magicDmg, float physicalDmg){ //Phys is whether or not damage is physical or not
+		float magicTaken = magicDmg-magicDefense;
+		float physTaken = physicalDmg-physicalDefense;
+		if(magicTaken > 0){
+			health-= magicTaken;
 		}
-		else{
-			damageTaken = rawDamage - magicDefense;
+		if(physTaken > 0){
+			health-= physTaken;
 		}
-		health -= damageTaken;
 	}
 
 	// Update is called once per frame
 	void Update () {
-	
+		if(health <= 0){
+			dead = true;
+		}
 	}
 }

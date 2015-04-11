@@ -26,14 +26,15 @@ public class Weapon : MonoBehaviour {
 	
 	}
 
-	public float dealDamage(float enemyDefense){
+	public float dealtPhysicalDamage(float enemyDefense){
 
 		float baseDmg = GameObject.FindGameObjectWithTag("Player").GetComponent<AdventurerStats>().baseDamage;
 		float power = GameObject.FindGameObjectWithTag("Player").GetComponent<AdventurerStats>().power;
 		float wit = GameObject.FindGameObjectWithTag("Player").GetComponent<AdventurerStats>().wit;
 
-		float totalDamage = ((physicalDamage+(2*power))*physicalDamageMultiplier) + ((magicDamage+(2*wit))*magicDamageMultiplier);
+		float totalDamage = (physicalDamage+baseDmg)*physicalDamageMultiplier;
 
 		return totalDamage;
 	}
+
 }
