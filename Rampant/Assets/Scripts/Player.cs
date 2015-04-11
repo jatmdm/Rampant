@@ -6,6 +6,7 @@ public class Player : MonoBehaviour {
 	public GameObject weapon;
 	public float sBounce;
 	public float weaponDist = 1;
+	private Vector2 weaponVecDist;
 	private float sheathCoolDown;
 	private bool Unsheathed;
 	public Vector2 vel;
@@ -14,18 +15,26 @@ public class Player : MonoBehaviour {
 	public float maxSpeed;
 	
 	private float dashTime;
+	private float dashDelay;
 	public float dashSpeed;
 
 	// Use this for initialization
 	void Start () {
-		Physics2D.IgnoreLayerCollision (8, 8);
+		Physics2D.IgnoreLayerCollision (10, 9);
+		Physics2D.IgnoreLayerCollision (10, 8);
 	}
-	
+
+	public Vector2 getWeaponDist()
+	{
+		return weaponVecDist.normalized;
+	}
+
 	// Update is called once per frame
 	void FixedUpdate () 
 	{
 		sheathCoolDown -= Time.fixedDeltaTime;
 		dashTime -= Time.fixedDeltaTime;
+		dashDelay -= Time.fixedDeltaTime;
 
 		sBounce = Mathf.Lerp (sBounce, 0, Time.fixedDeltaTime * 5);
 
@@ -69,14 +78,16 @@ public class Player : MonoBehaviour {
 			weapon.SetActive(false);
 		}
 
-		if(Input.GetMouseButtonDown(0) && sheathCoolDown < 0)
+		if(Input.GetMouseButtonDown(0) && (sheathCoolDown < 0))
 		{
 			Unsheathed = !Unsheathed;
 			sheathCoolDown = 1;
 		}
-		if(Input.GetKeyDown(KeyCode.LeftShift) && dashTime < 0)
+		if(Input.GetKeyDown(KeyCode.LeftShift) && dashDelay < 0)
 		{
+			dashDelay = .25f;
 			dashTime = .18f;
+			vel.Normalize();
 			vel *= dashSpeed;
 		}
 	
@@ -92,6 +103,8 @@ public class Player : MonoBehaviour {
 		weaponDist = Mathf.Lerp(weaponDist, Mathf.Clamp (Vector2.Distance (mWorldPos, transform.position), .5f, 1f), Time.fixedDeltaTime*5);
 
 		Vector2 dist = new Vector2(Mathf.Cos(Mathf.Atan2 (diffY, diffX)-(sBounce)*Mathf.Deg2Rad)*weaponDist, Mathf.Sin(Mathf.Atan2 (diffY, diffX)-(sBounce)*Mathf.Deg2Rad)*weaponDist);
+		weaponVecDist = dist;
+
 		weapon.GetComponent<Rigidbody2D> ().MovePosition ((Vector2)this.transform.position+dist);
 
 		weapon.transform.rotation = Quaternion.Euler (0, 0, Mathf.Rad2Deg * Mathf.Atan2 (diffY, diffX)+90-sBounce);
