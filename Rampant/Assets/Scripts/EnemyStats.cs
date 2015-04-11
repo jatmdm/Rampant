@@ -18,7 +18,7 @@ public class EnemyStats : MonoBehaviour {
 		health = maxHealth;
 	}
 
-	public void takeDamage(float magicDmg, float physicalDmg){ 
+	public void takeDamage(float physicalDmg, float magicDmg){ 
 		float magicTaken = magicDmg-magicDefense;
 		float physTaken = physicalDmg-physicalDefense;
 		if(magicTaken > 0){
