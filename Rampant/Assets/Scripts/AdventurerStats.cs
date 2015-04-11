@@ -4,7 +4,6 @@ using System.Collections;
 public class AdventurerStats : MonoBehaviour {
 
 	public float health;
-	public float healthRegen;
 	public float maxHealth;
 	public float maxStamina;
 	public float stamina;
@@ -35,8 +34,7 @@ public class AdventurerStats : MonoBehaviour {
 
 		maxHealth = vit*10f;
 		stamina = health = maxStamina =  maxHealth;
-		healthRegen = vit/3f;
-		staminaRegen = vit/2f;
+		staminaRegen = (vit/2f)*Time.deltaTime;
 
 		gender = new Vector2(Random.Range(0f, 6f), Random.Range(0f, 6f));
 

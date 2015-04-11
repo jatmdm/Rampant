@@ -2,13 +2,17 @@ using UnityEngine;
 using System.Collections;
 
 public class Weapon : MonoBehaviour {
-	public float damage;
-	public float damageMultiplier;
+	public float physicalDamage;
+	public float physicalDamageMultiplier;
+	public float magicDamage;
+	public float magicDamageMultiplier;
 
 	public float defense;
 
 	public Vector2 genderMinimum;
 	public Vector2 genderMaximum;
+
+	public float maxRange;
 
 	public bool phys;
 
@@ -25,17 +29,10 @@ public class Weapon : MonoBehaviour {
 	public float dealDamage(float enemyDefense){
 
 		float baseDmg = GameObject.FindGameObjectWithTag("Player").GetComponent<AdventurerStats>().baseDamage;
-		float power = 0;
-		float wit = 0;
+		float power = GameObject.FindGameObjectWithTag("Player").GetComponent<AdventurerStats>().power;
+		float wit = GameObject.FindGameObjectWithTag("Player").GetComponent<AdventurerStats>().wit;
 
-
-		if(phys){
-			power = GameObject.FindGameObjectWithTag("Player").GetComponent<AdventurerStats>().power;
-		}
-		else{
-			wit = GameObject.FindGameObjectWithTag("Player").GetComponent<AdventurerStats>().wit;
-		}
-		float totalDamage = (damage*damageMultiplier) + baseDmg + (power*damageMultiplier) + (wit * damageMultiplier);
+		float totalDamage = ((physicalDamage+(2*power))*physicalDamageMultiplier) + ((magicDamage+(2*wit))*magicDamageMultiplier);
 
 		return totalDamage;
 	}
