@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyAI : MonoBehaviour {
+public class RevanentAI : MonoBehaviour {
 
 	public Vector2 targetPosition;
 	public Vector2 dir = Vector2.zero;
