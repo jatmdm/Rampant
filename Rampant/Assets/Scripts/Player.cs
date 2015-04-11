@@ -20,7 +20,8 @@ public class Player : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Physics2D.IgnoreLayerCollision (8, 8);
+		Physics2D.IgnoreLayerCollision (10, 9);
+		Physics2D.IgnoreLayerCollision (10, 8);
 	}
 
 	public Vector2 getWeaponDist()
