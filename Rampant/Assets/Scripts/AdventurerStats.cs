@@ -24,7 +24,7 @@ public class AdventurerStats : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+		initStats();
 	}
 
 	public void initStats(){
