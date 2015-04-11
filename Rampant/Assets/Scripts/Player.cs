@@ -12,6 +12,9 @@ public class Player : MonoBehaviour {
 	private float speed;
 	private float fakeMax;
 	public float maxSpeed;
+	
+	private float dashTime;
+	public float dashSpeed;
 
 	// Use this for initialization
 	void Start () {
@@ -19,30 +22,37 @@ public class Player : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void FixedUpdate () 
+	{
 		sheathCoolDown -= Time.fixedDeltaTime;
+		dashTime -= Time.fixedDeltaTime;
+
 		sBounce = Mathf.Lerp (sBounce, 0, Time.fixedDeltaTime * 5);
 
-		vel = Vector2.Lerp (vel, Vector2.zero, Time.fixedDeltaTime * 3);
+		if(dashTime < 0) vel = Vector2.Lerp (vel, Vector2.zero, Time.fixedDeltaTime * 3);
 
-		if(Input.GetKey(KeyCode.W))
+		if(dashTime < 0)
 		{
-			vel.y = Mathf.Lerp(vel.y, 1, Time.fixedDeltaTime*5);
-		}
-		if(Input.GetKey(KeyCode.S))
-		{
-			vel.y = Mathf.Lerp(vel.y, -1, Time.fixedDeltaTime*5);
-		}
-		if(Input.GetKey(KeyCode.D))
-		{
-			vel.x = Mathf.Lerp(vel.x, 1, Time.fixedDeltaTime*5);
-		}
-		if(Input.GetKey(KeyCode.A))
-		{
-			vel.x = Mathf.Lerp(vel.x, -1, Time.fixedDeltaTime*5);
+			if(Input.GetKey(KeyCode.W))
+			{
+				vel.y = Mathf.Lerp(vel.y, 1, Time.fixedDeltaTime*5);
+			}
+			if(Input.GetKey(KeyCode.S))
+			{
+				vel.y = Mathf.Lerp(vel.y, -1, Time.fixedDeltaTime*5);
+			}
+			if(Input.GetKey(KeyCode.D))
+			{
+				vel.x = Mathf.Lerp(vel.x, 1, Time.fixedDeltaTime*5);
+			}
+			if(Input.GetKey(KeyCode.A))
+			{
+				vel.x = Mathf.Lerp(vel.x, -1, Time.fixedDeltaTime*5);
+			}
 		}
 
-		GetComponent<Rigidbody2D> ().MovePosition (GetComponent<Rigidbody2D> ().position + (vel * (fakeMax) * Time.fixedDeltaTime));
+		if(dashTime < 0) GetComponent<Rigidbody2D> ().MovePosition (GetComponent<Rigidbody2D> ().position + (vel * (fakeMax) * Time.fixedDeltaTime));
+		else GetComponent<Rigidbody2D> ().MovePosition (GetComponent<Rigidbody2D> ().position + (vel * Time.fixedDeltaTime));
 
 		if(Unsheathed)
 		{
@@ -63,6 +73,11 @@ public class Player : MonoBehaviour {
 		{
 			Unsheathed = !Unsheathed;
 			sheathCoolDown = 1;
+		}
+		if(Input.GetKeyDown(KeyCode.LeftShift) && dashTime < 0)
+		{
+			dashTime = .18f;
+			vel *= dashSpeed;
 		}
 	
 		float cameraDif = Camera.main.transform.position.y - transform.position.y;
